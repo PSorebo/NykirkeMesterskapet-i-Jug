@@ -63,3 +63,7 @@ Storskjermens hovedtittel er endret fra JUG ARENA til NykirkeMesterskapet i Jug.
 
 ## Deltakerliste – oktober 2026
 Dette er en foreløpig import med 48 av forventede 52 navn. FIRE DELTAKERE MANGLER. Avklar disse før trekning. Denne versjonen har en egen lagringsnøkkel for å unngå at resultatene fra apriltesten overstyrer deltakerne. Eksporter gammel backup før bytte.
+
+
+## Kvalifisering – oppdatert oktober 2026
+Uansett antall deltakere går plass 1–20 til A-sluttspill, plass 21–40 til B-sluttspill og plass 41 og ned er ute etter hovedrunden. Hvert sluttspill har 4 bord med 5 spillere og 2 runder. Ved helt identiske plasseringer ved 20./21. eller 40./41. plass velger arrangøren manuelt hvem som går videre. Det er ikke nødvendig å endre deltakerlisten, og lagringsnøkkelen er beholdt.
