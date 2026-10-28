@@ -67,3 +67,6 @@ Dette er en foreløpig import med 48 av forventede 52 navn. FIRE DELTAKERE MANGL
 
 ## Kvalifisering – oppdatert oktober 2026
 Uansett antall deltakere går plass 1–20 til A-sluttspill, plass 21–40 til B-sluttspill og plass 41 og ned er ute etter hovedrunden. Hvert sluttspill har 4 bord med 5 spillere og 2 runder. Ved helt identiske plasseringer ved 20./21. eller 40./41. plass velger arrangøren manuelt hvem som går videre. Det er ikke nødvendig å endre deltakerlisten, og lagringsnøkkelen er beholdt.
+
+## Rettelse v1.6.1 – Bordtrekning
+For 48 deltakere trekkes ni bord (seks med fem, tre med seks). For 52 deltakere trekkes ti bord (åtte med fem, to med seks). Hovedrunde 1–3 kan trekkes før sluttspill.
