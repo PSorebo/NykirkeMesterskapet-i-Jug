@@ -75,3 +75,8 @@
 .screenmode .compact-screen-panel .sectionhead{margin-bottom:10px}
 .compact-disclaimer{max-width:1750px;margin:8px auto;padding:9px 15px}
 @media(max-width:850px){.arena-compact-grid{grid-template-columns:1fr}.arena-compact-row{min-height:41px}.screenmode .compact-screen-panel{padding:10px}.compact-name{font-size:14px}}
+
+/* Live-status, alltid synlig også i storskjerm */
+#jug-live-bar{position:fixed;bottom:10px;left:12px;z-index:1000;background:#0c182de8;border:1px solid #3a5269;border-radius:9px;padding:7px 10px;display:flex;gap:8px;align-items:center;font:600 12px system-ui,sans-serif;box-shadow:0 5px 30px #0008}
+#jug-live-bar button{background:#263c53;color:#f0f7ff;border:1px solid #42627e;border-radius:6px;padding:7px 9px;cursor:pointer}
+.screenmode #jug-live-bar{opacity:.75}
