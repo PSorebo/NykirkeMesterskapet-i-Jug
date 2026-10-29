@@ -72,6 +72,17 @@ function screenList(list,start,end,title,showZones=false){
     return `<div class="arena-row ${cls}"><span class="arena-rank">${start+i+1}</span><span class="arena-name">${esc(r.name)}<small>${r.places.join(' · ')} · ${r.played} ${r.played===1?'runde':'runder'}</small></span>${change}<span class="arena-points">${r.points}<small>poeng</small></span></div>`
   }).join('')||'<div class="empty-state">Venter på resultater …</div>'}</div></div>`;
 }
+// Kompakt todelt storskjerm: lavest poengsum øverst, begge spalter viser faste rangplasser.
+function screenDoubleList(list,start,end,title,showZones=false){
+ const subset=list.slice(start,end),mid=Math.ceil(subset.length/2),map=movement();
+ const col=(part,offset)=>`<div class="arena-compact-col">${part.map((r,i)=>{
+  const position=start+offset+i+1,delta=map.get(r.id);
+  const change=delta===undefined?'':delta>0?`<span class="compact-shift up">▲${delta}</span>`:delta<0?`<span class="compact-shift down">▼${-delta}</span>`:'<span class="compact-shift same">—</span>';
+  const cls=showZones?(position<=20?'zoneA':position<=40?'zoneB':''):(position<=20?'zoneA':position<=40?'zoneB':'');
+  return `<div class="arena-compact-row ${cls}"><span class="compact-rank">${position}</span><span class="compact-name" title="${esc(r.name)}">${esc(r.name)}<small>${r.places.join(' · ')||'Venter'} · ${r.played} ${r.played===1?'runde':'runder'}</small></span>${change}<span class="compact-points">${r.points}<small>poeng</small></span></div>`;
+ }).join('')||'<div class="empty-state">Venter på resultater …</div>'}</div>`;
+ return `<div class="panel screen-panel compact-screen-panel"><div class="sectionhead"><h2>${title}</h2><span class="screen-counter">${subset.length?start+1:'0'}–${Math.min(end,list.length)} / ${list.length}</span></div><div class="arena-compact-grid">${col(subset.slice(0,mid),0)}${col(subset.slice(mid),mid)}</div></div>`;
+}
 const champions=[['2024','Camilla Skovly'],['2024','Ivar Lundstad'],['2025','Ole Andreassen'],['2025','Trond Anders Solberg'],['2026','Vidar Bugge Hansen']];
 function screenBoard(k,group,i){
  const vals=state.results[k]||{},finished=completeGroup(k,group);
@@ -85,24 +96,28 @@ function screen(){
  const all=mainRanking(),fair=mainDone(),ready=qualifyReady();
  // Storskjermen viser bare den aktive fasen. Når hovedrunden er ferdig,
  // fjernes samtlige hovedrundesider fra den automatiske rotasjonen.
- const labels=!fair?['VELKOMMEN',...Array.from({length:Math.ceil(state.players.length/10)},(_,i)=>i===0?'TOPP 10':`PLASS ${i*10+1}–${Math.min(state.players.length,(i+1)*10)}`),'KAMPEN OM A-PLASSENE','BORDOVERSIKT','HALL OF FAME']:
+ const half=Math.ceil(state.players.length/2), mainPages=Math.ceil(state.players.length/half);
+ const labels=!fair?['VELKOMMEN',...Array.from({length:mainPages},(_,i)=>`HOVEDRUNDE ${i+1}`),'KAMPEN OM A-PLASSENE','BORDOVERSIKT','HALL OF FAME']:
  !ready?['KVALIFISERING MÅ AVKLARES','HALL OF FAME']:
- ['A-SLUTTSPILL','A-SLUTTSPILL 11–20','B-SLUTTSPILL','B-SLUTTSPILL 11–20',...(stageDone('A')&&stageDone('B')?['FINALENE']:[]),'HALL OF FAME'];
+ ['A-SLUTTSPILL','B-SLUTTSPILL',...(stageDone('A')&&stageDone('B')?['FINALENE']:[]),'HALL OF FAME'];
  const slide=screenSlide%labels.length,kind=labels[slide];let content='';
  if(kind==='VELKOMMEN')content=showIntro();
  else if(kind==='HALL OF FAME')content=showHall();
  else if(kind==='FINALENE')content=showFinalists();
  else if(kind==='KVALIFISERING MÅ AVKLARES')content='<div class="panel spotlight"><h2>⚖️ Kvalifiseringen må avklares</h2><p>Det er identiske plasseringer ved 20.- eller 40.-plassen. Arrangøren må avgjøre disse under Resultatlister før sluttspillet kan begynne.</p></div>'; 
- else if(kind==='TOPP 10'||kind.startsWith('PLASS ')){
- const start=kind==='TOPP 10'?0:Number(kind.match(/PLASS (\d+)/)[1])-1,sub=ranking.slice(start,start+10);
- content=screenList(ranking,start,start+10,`${start===0?'🏆 ':'🎲 '}${fair?'Hovedrunde':'Foreløpig hovedrunde'} · ${kind}`,fair);
- if(!fair)content+=`<div class="statusline warn">Foreløpig stilling – bare deltakere med registrerte resultater er rangert. En spiller kan ha flere eller færre runder enn andre.</div>`;
- if(!sub.length)content=`<div class="panel"><div class="empty-state">Det er foreløpig ikke registrert nok spillere til å fylle denne siden. Neste side vises automatisk.</div></div>`;
+ else if(kind.startsWith('HOVEDRUNDE ')){
+ const page=Number(kind.split(' ')[1])-1,start=page*half,end=Math.min(state.players.length,start+half);
+ content=screenDoubleList(ranking,start,end,`🏆 Foreløpig hovedrunde · Plass ${start+1}–${end}`,false);
+ if(!fair)content+=`<div class="statusline warn compact-disclaimer">Foreløpig stilling: spillere uten resultat står ennå ikke i rangeringen. Antall spilte runder kan variere.</div>`;
+ if(start>=ranking.length)content=`<div class="panel"><div class="empty-state">Venter på resultater til denne siden.</div></div>`;
  } else if(kind==='KAMPEN OM A-PLASSENE'){
  content=fair?`<div class="boundary-grid"><div>${screenList(all,aCount()-5,aCount(),'🟢 SISTE 5 TIL A-SLUTTSPILLET',true)}</div><div>${screenList(all,aCount(),aCount()+5,'🟣 FØRSTE 5 I B-SLUTTSPILLET',true)}</div></div><div class="boundary-line">${ties(all,19)?'⚠ UAVGJORT PÅ A/B-GRENSEN – ARRANGØREN MÅ AVGJØRE':`🏁 A/B-GRENSEN GÅR MELLOM PLASS ${aCount()} OG ${aCount()+1}`}</div>`:
  `<div class="panel spotlight"><h2>⚡ Kampen om A-sluttspillet</h2><p>Den avgjørende grensen mellom ${aCount()}.- og ${aCount()+1}.-plassen vises når alle spillerne har fullført tre hovedrunder.</p><div class="boundary-line">${boardDone} / ${groupCount(state.players.length)*3} bord i hovedrunden ferdige</div>${progressHtml()}</div>`;
  } else if(kind==='BORDOVERSIKT'){const key=[...rounds].reverse().find(k=>state.draws[k]?.length)||'H1';content=`<div class="panel"><div class="sectionhead"><h2>🎲 Bordoversikt – ${label(key)}</h2></div><div class="screen-board-grid">${(state.draws[key]||[]).map((g,i)=>screenBoard(key,g,i)).join('')||'<div class="empty-state">Venter på første bordtrekning.</div>'}</div></div>`;
- } else {const which=kind[0],rankingStage=stageRank(which),lower=kind.includes('11–20'),start=lower?10:0;content=screenList(rankingStage,start,start+10,`${which==='A'?'★':'♛'} ${which}-SLUTTSPILL · ${lower?'PLASS 11–20':'TOPP 10'}`);if(!rankingStage.length)content='<div class="panel"><div class="empty-state">Venter på kvalifisering.</div></div>'}
+ } else {const which=kind[0],rankingStage=stageRank(which);
+ content=screenDoubleList(rankingStage,0,20,`${which==='A'?'★':'♛'} ${which}-SLUTTSPILL · ALLE 20 SPILLERE`);
+ if(!rankingStage.length)content='<div class="panel"><div class="empty-state">Venter på kvalifisering.</div></div>'}
+
  const showSpecial=['VELKOMMEN','FINALENE','HALL OF FAME'].includes(kind);
  return `<div class="screen-hero"><div class="overline">NYKIRKEMESTERSKAPET I JUG · LIVE RESULTATER</div><div class="screen-title">Nykirke<span>Mesterskapet</span> i Jug</div><p>${kind} · VISNING ${slide+1} AV ${labels.length} · AUTOMATISK BYTTE HVERT ${SCREEN_SECONDS}. SEKUND</p><div class="slide-pips">${labels.map((x,i)=>`<span class="${slide===i?'active':''}"></span>`).join('')}</div></div>${showSpecial?'':fair&&ready?`<div class="metrics screen-metrics">${metric('A-SLUTTSPILL', '20', 'Kvalifiserte')}${metric('B-SLUTTSPILL','20','Kvalifiserte')}${metric('A-BORD FERDIG',(state.draws.A1||[]).filter(g=>completeGroup('A1',g)).length+(state.draws.A2||[]).filter(g=>completeGroup('A2',g)).length+'/8','2 runder')}${metric('B-BORD FERDIG',(state.draws.B1||[]).filter(g=>completeGroup('B1',g)).length+(state.draws.B2||[]).filter(g=>completeGroup('B2',g)).length+'/8','2 runder')}</div>`:`<div class="metrics screen-metrics">${metric('DELTAKERE',state.players.length,'Totalt')}${metric('BORD FERDIG',boardDone+'/'+(groupCount(state.players.length)*3),'Hovedrunden')}${metric('HAR RESULTAT',ranking.length,'Av '+state.players.length+' deltakere')}${`<div class="metric qualification-metric"><span class="mark">✦</span><div class="k">KVALIFISERING TIL A- OG B-SLUTTSPILL</div><div class="v">${fair?(qualifyReady()?'AVKLART':'AVGJØRELSE GJENSTÅR'):'Kommer etter 3. runde i hovedrunden'}</div><div class="sub">${fair?'20 til A · 20 til B · øvrige ute':'Venter på ferdig hovedrunde'}</div></div>`}</div>`}${content}<div class="screenctl">${btn('◀ Forrige','prevScreen')}${btn('▶ Neste','nextScreen')}${btn('Avslutt','exitScreen')}</div>`;
 }
