@@ -80,3 +80,29 @@
 #jug-live-bar{position:fixed;bottom:10px;left:12px;z-index:1000;background:#0c182de8;border:1px solid #3a5269;border-radius:9px;padding:7px 10px;display:flex;gap:8px;align-items:center;font:600 12px system-ui,sans-serif;box-shadow:0 5px 30px #0008}
 #jug-live-bar button{background:#263c53;color:#f0f7ff;border:1px solid #42627e;border-radius:6px;padding:7px 9px;cursor:pointer}
 .screenmode #jug-live-bar{opacity:.75}
+
+/* v2.0 – stor skjerm, alle bord uten scrolling */
+.screenmode .all-boards-panel {padding:clamp(8px,1vh,14px);margin-bottom:0;}
+.screenmode .all-boards-panel .sectionhead {margin-bottom:7px;}
+.screenmode .all-boards-panel .screen-board-grid {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(4px,.5vh,9px);}
+.screenmode .all-boards-panel .screen-board {padding:clamp(5px,.65vh,10px);min-width:0;}
+.screenmode .all-boards-panel .screen-board-head {margin-bottom:3px;}
+.screenmode .all-boards-panel .screen-board-player {min-height:0;padding:clamp(1px,.25vh,3px) 0;font-size:clamp(10px,.85vw,16px);}
+.screenmode .all-boards-panel .screen-place {min-width:clamp(24px,2vw,35px);min-height:clamp(24px,2vw,35px);}
+.screenmode .all-boards-panel .screen-place b {font-size:clamp(13px,1.1vw,19px);}
+.screenmode .all-boards-panel .screen-place small {font-size:clamp(6px,.45vw,8px);}
+.screenmode:has(.all-boards-panel) .screen-hero {padding-top:2px;padding-bottom:5px;}
+.screenmode:has(.all-boards-panel) .screen-metrics {margin-bottom:6px;gap:8px;}
+.screenmode:has(.all-boards-panel) .screen-metrics .metric {padding:6px 12px;}
+.screenmode:has(.all-boards-panel) .screen-metrics .metric .v {font-size:clamp(14px,1.5vw,24px);}
+.screenmode:has(.all-boards-panel) .screen-metrics .qualification-metric .v {font-size:clamp(11px,1.15vw,17px);}
+.screenmode:has(.all-boards-panel) .screen-hero .screen-title {font-size:clamp(23px,2.5vw,42px);}
+.screenmode .hall-show>img {width:39%;height:100%;object-fit:contain;object-position:center;background:#152037;opacity:1;}
+.screenmode .hall-show .show-copy {width:61%;max-width:61%;}
+.screenmode .hall-show .show-copy h2 {font-size:clamp(32px,4vw,59px);}
+.screenmode .intro-show>img {object-position:center center;transform:none;}
+.qual-indicator {display:block;width:max-content;margin:3px 0 0 auto;padding:2px 6px;border-radius:5px;font-size:clamp(8px,.65vw,11px);line-height:1.15;font-style:normal;font-weight:800;white-space:nowrap;}
+.qual-a {background:#1e5846;color:#a6f6d1;}
+.qual-b {background:#443665;color:#e1ccff;}
+.qual-out {background:#4c3033;color:#ffb6b7;}
+@media(max-width:900px){.screenmode .all-boards-panel .screen-board-grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
