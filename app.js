@@ -105,7 +105,7 @@ function screenDoubleList(list,start,end,title,showZones=false){
   const position=start+offset+i+1,delta=map.get(r.id);
   const change=delta===undefined?'':delta>0?`<span class="compact-shift up">▲${delta}</span>`:delta<0?`<span class="compact-shift down">▼${-delta}</span>`:'<span class="compact-shift same">—</span>';
   const cls=showZones?(position<=20?'zoneA':position<=40?'zoneB':''):(position<=20?'zoneA':position<=40?'zoneB':'');
-  return `<div class="arena-compact-row ${cls}"><span class="compact-rank">${position}</span><span class="compact-name" title="${esc(r.name)}">${esc(r.name)}<small>${r.places.join(' · ')||'Venter'} · ${r.played} ${r.played===1?'runde':'runder'}</small></span>${change}<span class="compact-points">${r.points}<small>poeng</small>${!mainDone()&&title.includes('hovedrunde')?`<em class="qual-indicator ${position<=20?'qual-a':position<=40?'qual-b':'qual-out'}">${position<=20?'A nå':position<=40?'B nå':'Utenfor'}</em>`:''}</span></div>`;
+  return `<div class="arena-compact-row ${cls}"><span class="compact-rank">${position}</span><span class="compact-name" title="${esc(r.name)}">${esc(r.name)}<small>${r.places.join(' · ')||'Venter'} · ${r.played} ${r.played===1?'runde':'runder'}</small></span>${change}<span class="compact-score"><span class="compact-points">${r.points}<small>poeng</small></span>${!mainDone()&&title.includes('hovedrunde')?`<em class="qual-indicator ${position<=20?'qual-a':position<=40?'qual-b':'qual-out'}">${position<=20?'A':position<=40?'B':'UTE'}</em>`:''}</span></div>`;
  }).join('')||'<div class="empty-state">Venter på resultater …</div>'}</div>`;
  return `<div class="panel screen-panel compact-screen-panel"><div class="sectionhead"><h2>${title}</h2><span class="screen-counter">${subset.length?start+1:'0'}–${Math.min(end,list.length)} / ${list.length}</span></div><div class="arena-compact-grid">${col(subset.slice(0,mid),0)}${col(subset.slice(mid),mid)}</div></div>`;
 }
@@ -145,17 +145,24 @@ function screen(){
  if(!rankingStage.length)content='<div class="panel"><div class="empty-state">Venter på kvalifisering.</div></div>'}
 
  const showSpecial=['VELKOMMEN','FINALENE','HALL OF FAME'].includes(kind);
- return `<div class="screen-hero"><div class="overline">NYKIRKEMESTERSKAPET I JUG · LIVE RESULTATER</div><div class="screen-title">Nykirke<span>Mesterskapet</span> i Jug</div><p>${kind} · VISNING ${slide+1} AV ${labels.length} · AUTOMATISK BYTTE ETTER ${kind==='VELKOMMEN'?5:SCREEN_SECONDS} SEKUND</p><div class="slide-pips">${labels.map((x,i)=>`<span class="${slide===i?'active':''}"></span>`).join('')}</div></div>${showSpecial?'':fair&&ready?`<div class="metrics screen-metrics">${metric('A-SLUTTSPILL', '20', 'Kvalifiserte')}${metric('B-SLUTTSPILL','20','Kvalifiserte')}${metric('A-BORD FERDIG',(state.draws.A1||[]).filter(g=>completeGroup('A1',g)).length+(state.draws.A2||[]).filter(g=>completeGroup('A2',g)).length+'/8','2 runder')}${metric('B-BORD FERDIG',(state.draws.B1||[]).filter(g=>completeGroup('B1',g)).length+(state.draws.B2||[]).filter(g=>completeGroup('B2',g)).length+'/8','2 runder')}</div>`:`<div class="metrics screen-metrics">${metric('DELTAKERE',state.players.length,'Totalt')}${metric('BORD FERDIG',boardDone+'/'+(groupCount(state.players.length)*3),'Hovedrunden')}${metric('HAR RESULTAT',ranking.length,'Av '+state.players.length+' deltakere')}${`<div class="metric qualification-metric"><span class="mark">✦</span><div class="k">KVALIFISERING TIL A- OG B-SLUTTSPILL</div><div class="v">${fair?(qualifyReady()?'AVKLART':'AVGJØRELSE GJENSTÅR'):'Kommer etter 3. runde i hovedrunden'}</div><div class="sub">${fair?'20 til A · 20 til B · øvrige ute':'Venter på ferdig hovedrunde'}</div></div>`}</div>`}${content}<div class="screenctl">${btn('◀ Forrige','prevScreen')}${btn('▶ Neste','nextScreen')}${btn('Avslutt','exitScreen')}</div>`;
+ return `<div class="screen-hero"><div class="overline">NYKIRKEMESTERSKAPET I JUG · LIVE RESULTATER</div><div class="screen-title">Nykirke<span>Mesterskapet</span> i Jug</div><p>${kind} · VISNING ${slide+1} AV ${labels.length} · AUTOMATISK BYTTE ETTER ${kind==='VELKOMMEN'||kind==='HALL OF FAME'?5:SCREEN_SECONDS} SEKUND</p><div class="slide-pips">${labels.map((x,i)=>`<span class="${slide===i?'active':''}"></span>`).join('')}</div></div>${showSpecial?'':fair&&ready?`<div class="metrics screen-metrics">${metric('A-SLUTTSPILL', '20', 'Kvalifiserte')}${metric('B-SLUTTSPILL','20','Kvalifiserte')}${metric('A-BORD FERDIG',(state.draws.A1||[]).filter(g=>completeGroup('A1',g)).length+(state.draws.A2||[]).filter(g=>completeGroup('A2',g)).length+'/8','2 runder')}${metric('B-BORD FERDIG',(state.draws.B1||[]).filter(g=>completeGroup('B1',g)).length+(state.draws.B2||[]).filter(g=>completeGroup('B2',g)).length+'/8','2 runder')}</div>`:`<div class="metrics screen-metrics">${metric('DELTAKERE',state.players.length,'Totalt')}${metric('BORD FERDIG',boardDone+'/'+(groupCount(state.players.length)*3),'Hovedrunden')}${metric('HAR RESULTAT',ranking.length,'Av '+state.players.length+' deltakere')}${`<div class="metric qualification-metric"><span class="mark">✦</span><div class="k">KVALIFISERING TIL A- OG B-SLUTTSPILL</div><div class="v">${fair?(qualifyReady()?'AVKLART':'AVGJØRELSE GJENSTÅR'):'Kommer etter 3. runde i hovedrunden'}</div><div class="sub">${fair?'20 til A · 20 til B · øvrige ute':'Venter på ferdig hovedrunde'}</div></div>`}</div>`}${content}<div class="screenctl">${btn('◀ Forrige','prevScreen')}${btn('▶ Neste','nextScreen')}${btn('Avslutt','exitScreen')}</div>`;
 }
 
 let screenInterval=null;
-function currentScreenIsIntro(){
-  return !mainDone() && (screenSlide % (Math.ceil(state.players.length/Math.ceil(state.players.length/2))+3))===0;
+function currentScreenIsShort(){
+  const fair=mainDone(), ready=qualifyReady();
+  const half=Math.ceil(state.players.length/2);
+  const pages=Math.ceil(state.players.length/half);
+  const labels=!fair?['VELKOMMEN',...Array.from({length:pages},(_,i)=>`HOVEDRUNDE ${i+1}`),'BORDOVERSIKT','HALL OF FAME']:
+    !ready?['KVALIFISERING MÅ AVKLARES','HALL OF FAME']:
+    ['A-SLUTTSPILL','B-SLUTTSPILL',...(stageDone('A')&&stageDone('B')?['FINALENE']:[]),'HALL OF FAME'];
+  const kind=labels[screenSlide%labels.length];
+  return kind==='VELKOMMEN'||kind==='HALL OF FAME';
 }
 function syncScreenTimer(){
   if(screenInterval){clearTimeout(screenInterval);screenInterval=null}
   if(view==='screen'){
-    const duration=currentScreenIsIntro()?5000:SCREEN_SECONDS*1000;
+    const duration=currentScreenIsShort()?5000:SCREEN_SECONDS*1000;
     screenInterval=setTimeout(()=>{
       if(view!=='screen')return;
       screenSlide++;render();syncScreenTimer();

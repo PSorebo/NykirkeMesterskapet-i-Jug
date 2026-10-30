@@ -135,3 +135,26 @@
 @keyframes drawPop{from{transform:scale(1.45);opacity:.4}to{transform:scale(1);opacity:1}}
 @media(max-width:1300px){.draw-show-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:800px){.draw-show-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* v2.2 – All board cards fit the projector; A/B next to score */
+.screenmode .compact-screen-panel .arena-compact-row{grid-template-columns:36px minmax(0,1fr) 49px 91px;min-height:41px;padding:3px 8px;}
+.screenmode .compact-screen-panel .compact-score{display:flex;align-items:center;justify-content:flex-end;gap:7px;white-space:nowrap;min-width:0;}
+.screenmode .compact-screen-panel .compact-points{min-width:30px;text-align:right;line-height:1.05;}
+.screenmode .compact-screen-panel .compact-points small{font-size:9px;line-height:1.1;}
+.screenmode .compact-screen-panel .qual-indicator{display:inline-flex;align-items:center;justify-content:center;margin:0;min-width:27px;font-size:11px;padding:4px 5px;}
+.screenmode .all-boards-panel .screen-board-grid{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:clamp(3px,.45vh,8px)!important;}
+.screenmode .all-boards-panel .screen-board{padding:clamp(5px,.5vh,8px)!important;}
+.screenmode .all-boards-panel .screen-board-head{margin-bottom:1px!important;}
+.screenmode .all-boards-panel .screen-board-player{padding:1px 0!important;line-height:1.03!important;gap:3px!important;}
+.screenmode .all-boards-panel .screen-board-name{font-size:clamp(10px,.78vw,15px)!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.screenmode .all-boards-panel .screen-place{min-width:29px!important;width:29px!important;min-height:27px!important;height:27px!important;}
+.screenmode .all-boards-panel .screen-place b{font-size:15px!important;line-height:1!important;}
+.screenmode .all-boards-panel .screen-place small{font-size:6px!important;line-height:1!important;}
+.screenmode .all-boards-panel .screen-board-label{font-size:11px;}
+.screenmode .all-boards-panel .screen-board-status{font-size:9px;}
+.screenmode .all-boards-panel .screen-board-head strong{font-size:12px;}
+.screenmode:has(.all-boards-panel) .main{padding-top:5px;padding-bottom:4px;}
+.screenmode:has(.all-boards-panel) .screen-hero p{margin:1px;}
+.screenmode:has(.all-boards-panel) .screen-hero .slide-pips{margin-top:3px;}
+.screenmode:has(.all-boards-panel) .screen-hero .screen-title{font-size:clamp(22px,2.25vw,37px)!important;}
+@media(max-width:900px){.screenmode .all-boards-panel .screen-board-grid{grid-template-columns:repeat(5,minmax(0,1fr))!important;}}
